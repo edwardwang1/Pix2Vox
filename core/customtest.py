@@ -164,6 +164,26 @@ def test_net_custom(cfg, epoch_idx=-1, output_dir=None, test_data_loader=None, \
                     rendering_views = np.moveaxis(rendering_views, [0,1,2], [1,2,0])
                 test_writer.add_image('Test Sample#%02d/Volume GroundTruth' % sample_idx, rendering_views, epoch_idx)
 
+            if not output_dir:
+                alt_output = os.path.join(cfg.DIR.OUT_PATH, '%s', dt.now().isoformat())
+                alt_output = output_dir.replace(":", "_")
+                img_dir = alt_output % 'images'
+                # Volume Visualization
+                gv = generated_volume.cpu().numpy()
+                rendering_views = utils.binvox_visualization.get_volume_views(gv, os.path.join(img_dir, 'test'),
+                                                                              epoch_idx)
+                if rendering_views.shape[2] == 3:
+                    rendering_views = np.moveaxis(rendering_views, [0,1,2], [1,2,0])
+
+                test_writer.add_image('Test Sample#%02d/Volume Reconstructed' % sample_idx, rendering_views, epoch_idx)
+                gtv = ground_truth_volume.cpu().numpy()
+                rendering_views = utils.binvox_visualization.get_volume_views(gtv, os.path.join(img_dir, 'test'),
+                                                                              epoch_idx)
+                if rendering_views.shape[2] == 3:
+                    rendering_views = np.moveaxis(rendering_views, [0,1,2], [1,2,0])
+                test_writer.add_image('Test Sample#%02d/Volume GroundTruth' % sample_idx, rendering_views, epoch_idx)
+                
+
             # Print sample loss and IoU
             print('[INFO] %s Test[%d/%d] Taxonomy = %s Sample = %s EDLoss = %.4f RLoss = %.4f IoU = %s' % \
                 (dt.now(), sample_idx + 1, n_samples, taxonomy_id, sample_name, encoder_loss.item(), \
@@ -172,6 +192,7 @@ def test_net_custom(cfg, epoch_idx=-1, output_dir=None, test_data_loader=None, \
 
     #print("volume", type(generated_volume))
     #gv = generated_volume.cpu().numpy()
+    #np.save("CreatedModel.npy", gv)
 
     # Output testing results
     mean_iou = []
