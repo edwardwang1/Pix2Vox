@@ -12,11 +12,16 @@ cfg                                         = __C
 #
 __C.DATASETS                                = edict()
 __C.DATASETS.SHAPENET                       = edict()
+
 __C.DATASETS.SHAPENET.TAXONOMY_FILE_PATH    = './datasets/ShapeNet.json'
-# __C.DATASETS.SHAPENET.TAXONOMY_FILE_PATH  = './datasets/PascalShapeNet.json'
-__C.DATASETS.SHAPENET.RENDERING_PATH        = '/home/eprisman/projects/def-eprisman/eprisman/ShapeNet/ShapeNetRendering/%s/%s/rendering/%02d.png'
-# __C.DATASETS.SHAPENET.RENDERING_PATH      = '/home/hzxie/Datasets/ShapeNet/PascalShapeNetRendering/%s/%s/render_%04d.jpg'
-__C.DATASETS.SHAPENET.VOXEL_PATH            = '/home/eprisman/projects/def-eprisman/eprisman/ShapeNet/ShapeNetVox32/%s/%s/model.binvox'
+__C.DATASETS.SHAPENET.RENDERING_PATH        = 'C:\\Users\\Edward\\Desktop\\3D-R2N2\\ShapeNet\\ShapeNetRendering\\%s\\%s\\rendering\\%02d.png'
+__C.DATASETS.SHAPENET.VOXEL_PATH            = 'C:\\Users\\Edward\\Desktop\\3D-R2N2\\ShapeNet\\ShapeNetVox32\\%s\\%s\\model.binvox'
+
+__C.DATASETS.CUSTOM                         = edict()
+__C.DATASETS.CUSTOM.TAXONOMY_FILE_PATH      = 'C:\\Users\\Edward\\Desktop\\\\Pix2Vox\\datasets\\Custom.json'
+__C.DATASETS.CUSTOM.RENDERING_PATH          = r'C:\Users\Edward\Desktop\Pix2Vox\CustomData\CustomRendering\%s\%s\rendering\%02d.png'
+__C.DATASETS.CUSTOM.VOXEL_PATH              = r'C:\Users\Edward\Desktop\Pix2Vox\CustomData\CustomVox32\%s\%s\model.binvox'
+
 __C.DATASETS.PASCAL3D                       = edict()
 __C.DATASETS.PASCAL3D.TAXONOMY_FILE_PATH    = './datasets/Pascal3D.json'
 __C.DATASETS.PASCAL3D.ANNOTATION_PATH       = '/home/hzxie/Datasets/PASCAL3D/Annotations/%s_imagenet/%s.mat'
@@ -36,6 +41,8 @@ __C.DATASET.MEAN                            = [0.5, 0.5, 0.5]
 __C.DATASET.STD                             = [0.5, 0.5, 0.5]
 __C.DATASET.TRAIN_DATASET                   = 'ShapeNet'
 __C.DATASET.TEST_DATASET                    = 'ShapeNet'
+__C.DATASET.CUSTOM_TRAIN_DATASET             = 'Custom'
+__C.DATASET.CUSTOM_TEST_DATASET             = 'Custom'
 # __C.DATASET.TEST_DATASET                  = 'Pascal3D'
 # __C.DATASET.TEST_DATASET                  = 'Pix3D'
 
@@ -57,7 +64,7 @@ __C.CONST.CROP_IMG_H                        = 128       # Dummy property for Pas
 # Directories
 #
 __C.DIR                                     = edict()
-__C.DIR.OUT_PATH                            = './output'
+__C.DIR.OUT_PATH                            = r'C:\Users\Edward\Desktop\Pix2Vox\output'
 __C.DIR.RANDOM_BG_PATH                      = '/home/eprisman/projects/def-eprisman/eprisman/JPEGImages'
 
 #

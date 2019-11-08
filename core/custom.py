@@ -35,6 +35,33 @@ def custom_net(cfg, epoch_idx=-1, output_dir=None, test_data_loader=None, \
     # Enable the inbuilt cudnn auto-tuner to find the best algorithm to use
     torch.backends.cudnn.benchmark = True
 
+    taxonomies = []
+    print(cfg.DATASETS)
+    with open(cfg.DATASETS[cfg.DATASET.CUSTOM_TEST_DATASET.upper()].TAXONOMY_FILE_PATH, encoding='utf-8') as file:
+        taxonomies = json.loads(file.read())
+    taxonomies = {t['taxonomy_id']: t for t in taxonomies}
+
+    # Set up data loader
+    if test_data_loader is None:
+        # Set up data augmentation
+        IMG_SIZE = cfg.CONST.IMG_H, cfg.CONST.IMG_W
+        CROP_SIZE = cfg.CONST.CROP_IMG_H, cfg.CONST.CROP_IMG_W
+        test_transforms = utils.data_transforms.Compose([
+            utils.data_transforms.CenterCrop(IMG_SIZE, CROP_SIZE),
+            utils.data_transforms.RandomBackground(cfg.TEST.RANDOM_BG_COLOR_RANGE),
+            utils.data_transforms.Normalize(mean=cfg.DATASET.MEAN, std=cfg.DATASET.STD),
+            utils.data_transforms.ToTensor(),
+        ])
+
+        dataset_loader = utils.data_loaders.DATASET_LOADER_MAPPING[cfg.DATASET.CUSTOM_TEST_DATASET](cfg)
+        test_data_loader = torch.utils.data.DataLoader(
+            dataset=dataset_loader.get_dataset(utils.data_loaders.DatasetType.TEST,
+                                               cfg.CONST.N_VIEWS_RENDERING, test_transforms),
+            batch_size=1,
+            num_workers=1,
+            pin_memory=True,
+            shuffle=False)
+    
 
     # Set up networks
     if decoder is None or encoder is None:
@@ -66,43 +93,25 @@ def custom_net(cfg, epoch_idx=-1, output_dir=None, test_data_loader=None, \
     refiner.eval()
     merger.eval()
 
-    rendering_image_paths = []
+        
+    for sample_idx, (taxonomy_id, sample_name, rendering_images, ground_truth_volume) in enumerate(test_data_loader): 
+        with torch.no_grad():
+            # Get data from data loader        
+            rendering_images = utils.network_utils.var_or_cuda(rendering_images)
 
-    for folder, subs, files in os.walk('/home/eprisman/projects/def-eprisman/eprisman/CustomRenderingImages/mand1/'):
-        for filename in files:
-            rendering_image_paths.append(os.path.abspath(os.path.join(folder, filename)))
+            # Test the encoder, decoder, refiner and merger
+            image_features = encoder(rendering_images)
+            raw_features, generated_volume = decoder(image_features)
 
-    print("number of files", len(rendering_image_paths))
+            if cfg.NETWORK.USE_MERGER and epoch_idx >= cfg.TRAIN.EPOCH_START_USE_MERGER:
+                generated_volume = merger(raw_features, generated_volume)
+            else:
+                generated_volume = torch.mean(generated_volume, dim=1)
 
-    selected_rendering_image_paths = [rendering_image_paths[i] for i in range(len(rendering_image_paths))]
-    #selected_rendering_image_paths = [rendering_image_paths[i] for i in range(cfg.CONST.N_VIEWS_RENDERING)]
+            if cfg.NETWORK.USE_REFINER and epoch_idx >= cfg.TRAIN.EPOCH_START_USE_REFINER:
+                generated_volume = refiner(generated_volume)
 
-    rendering_images = []
-    for image_path in selected_rendering_image_paths:
-        rendering_image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED).astype(np.float32) / 255.
-        if len(rendering_image.shape) < 3:
-            print('[FATAL] %s It seems that there is something wrong with the image file %s' %
-                  (dt.now(), image_path))
-            sys.exit(2)
+    #print("volume", type(generated_volume))
+    gv = generated_volume.cpu().numpy()
 
-        rendering_images.append(rendering_image)
-
-    rendering_images = np.asarray(rendering_images)
-
-    with torch.no_grad():
-        # Get data from data loader
-        rendering_images = utils.network_utils.var_or_cuda(rendering_images)
-
-        # Test the encoder, decoder, refiner and merger
-        image_features = encoder(rendering_images)
-        raw_features, generated_volume = decoder(image_features)
-
-        if cfg.NETWORK.USE_MERGER and epoch_idx >= cfg.TRAIN.EPOCH_START_USE_MERGER:
-            generated_volume = merger(raw_features, generated_volume)
-        else:
-            generated_volume = torch.mean(generated_volume, dim=1)
-
-        if cfg.NETWORK.USE_REFINER and epoch_idx >= cfg.TRAIN.EPOCH_START_USE_REFINER:
-            generated_volume = refiner(generated_volume)
-
-    print(type(generated_volume))
+    np.save("CreatedModel", gv)

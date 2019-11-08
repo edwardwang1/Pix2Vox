@@ -20,6 +20,7 @@ from config import cfg
 from core.train import train_net
 from core.test import test_net
 from core.custom import custom_net
+from core.customtrain import train_net_custom
 
 
 def get_args_from_command_line():
@@ -66,7 +67,7 @@ def main():
 
     # Start train/test process
     if not args.test:
-        train_net(cfg)
+        train_net_custom(cfg)
     else:
         if 'WEIGHTS' in cfg.CONST and os.path.exists(cfg.CONST.WEIGHTS):
             custom_net(cfg)
