@@ -19,7 +19,7 @@ from datetime import datetime as dt
 from tensorboardX import SummaryWriter
 from time import time
 
-from core.test import test_net
+from core.customtest import test_net_custom
 from models.encoder import Encoder
 from models.decoder import Decoder
 from models.refiner import Refiner
@@ -259,7 +259,7 @@ def train_net_custom(cfg):
                 (dt.now(), epoch_idx + 2, cfg.TRAIN.NUM_EPOCHES, n_views_rendering))
 
         # Validate the training models
-        iou = test_net(cfg, epoch_idx + 1, output_dir, val_data_loader, val_writer, encoder, decoder, refiner, merger)
+        iou = test_net_custom(cfg, epoch_idx + 1, output_dir, val_data_loader, val_writer, encoder, decoder, refiner, merger)
 
         # Save weights to file
         if (epoch_idx + 1) % cfg.TRAIN.SAVE_FREQ == 0:

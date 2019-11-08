@@ -19,7 +19,7 @@ from pprint import pprint
 from config import cfg
 from core.train import train_net
 from core.test import test_net
-from core.custom import custom_net
+from core.customtest import test_net_custom
 from core.customtrain import train_net_custom
 
 
@@ -70,7 +70,7 @@ def main():
         train_net_custom(cfg)
     else:
         if 'WEIGHTS' in cfg.CONST and os.path.exists(cfg.CONST.WEIGHTS):
-            custom_net(cfg)
+            test_net_custom(cfg)
             #test_net(cfg)
         else:
             print('[FATAL] %s Please specify the file path of checkpoint.' % (dt.now()))
