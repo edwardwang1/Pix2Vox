@@ -1,0 +1,46 @@
+[
+    {
+        "baseline": {
+            "1-view": 0.513,
+            "2-view": 0.536,
+            "3-view": 0.549,
+            "4-view": 0.556,
+            "5-view": 0.561
+        },
+        "taxonomy_id": "a001",
+        "taxonomy_name": "mandible",
+        "test": [
+            "randomstring77"
+        ],
+        "train": [
+            "randomstring0",
+            "randomstring54"
+        ],
+        "val": [
+            "randomstring55",
+            "randomstring56",
+            "randomstring57",
+            "randomstring58",
+            "randomstring59",
+            "randomstring6",
+            "randomstring60",
+            "randomstring61",
+            "randomstring62",
+            "randomstring63",
+            "randomstring64",
+            "randomstring65",
+            "randomstring66",
+            "randomstring67",
+            "randomstring68",
+            "randomstring69",
+            "randomstring7",
+            "randomstring70",
+            "randomstring71",
+            "randomstring72",
+            "randomstring73",
+            "randomstring74",
+            "randomstring75",
+            "randomstring76"
+        ]
+    }
+]
